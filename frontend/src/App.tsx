@@ -3,6 +3,8 @@ import axios from 'axios'
 import type { FormEvent } from 'react'
 import './App.css'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+
 type Employee = {
   id: number
   name: string
@@ -26,7 +28,7 @@ const filteredEmployees = employees.filter((employee) =>
 const fetchEmployees = async () => {
   try {
     const response = await axios.get(
-      'http://localhost:5000/employees'
+      `${API_URL}/employees`
     )
     setEmployees(response.data)
   } catch (error) {
@@ -48,7 +50,7 @@ const handleDelete = async (id: number) => {
   }
 
   try {
-    await axios.delete(`http://localhost:5000/employees/${id}`)
+    await axios.delete(`${API_URL}/employees/${id}`)
 
     await fetchEmployees()
 
@@ -85,11 +87,11 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
   try {
   if (editingId !== null) {
     await axios.put(
-      `http://localhost:5000/employees/${editingId}`,
+      `${API_URL}/employees/${editingId}`,
       { name, email, role }
     )
   } else {
-    await axios.post('http://localhost:5000/employees', {
+    await axios.post(`${API_URL}/employees`, {
       name,
       email,
       role
