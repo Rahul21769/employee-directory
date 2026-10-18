@@ -3,7 +3,7 @@ import axios from 'axios'
 import type { FormEvent } from 'react'
 import './App.css'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+const API_URL = import.meta.env.VITE_API_URL || 'https://employee-directory-peqt.onrender.com'
 
 type Employee = {
   id: number
