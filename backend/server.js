@@ -1,3 +1,6 @@
+const dns = require('dns').promises;
+const net = require('net');
+
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
@@ -124,15 +127,39 @@ const PORT = process.env.PORT || 5000;
 
 async function startServer() {
   try {
-    await db.query('SELECT 1');
+    const host = process.env.DB_HOST;
+    const port = Number(process.env.DB_PORT || 3306);
 
+    const addresses = await dns.lookup(host, { all: true });
+    console.log('Database DNS addresses:', addresses);
+
+    await new Promise((resolve, reject) => {
+      const socket = net.createConnection({ host, port });
+
+      socket.setTimeout(10000);
+
+      socket.once('connect', () => {
+        console.log('Database TCP connection successful');
+        socket.destroy();
+        resolve();
+      });
+
+      socket.once('timeout', () => {
+        socket.destroy();
+        reject(new Error('Database TCP connection timed out'));
+      });
+
+      socket.once('error', reject);
+    });
+
+    await db.query('SELECT 1');
     console.log('MySQL connected successfully');
 
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
   } catch (error) {
-    console.error('MySQL connection failed:', error.message);
+    console.error('Database diagnostic failed:', error.message);
     process.exit(1);
   }
 }
