@@ -159,7 +159,13 @@ async function startServer() {
       console.log(`Server is running on port ${PORT}`);
     });
   } catch (error) {
-    console.error('Database diagnostic failed:', error.message);
+    console.error('Database diagnostic failed:', {
+      message: error.message,
+      code: error.code,
+      errno: error.errno,
+      sqlMessage: error.sqlMessage
+    });
+
     process.exit(1);
   }
 }
